@@ -293,10 +293,18 @@ bool service_client(msl::socket& client,const std::string& message)
 void show_help()
 {
 	std::cout<<"Media Server"<<std::endl;
-	std::cout<<"\tUsage: \"./media_server MEDIA_ROOT PORT_NUMBER\""<<std::endl;
-	std::cout<<"\tFiles outside of the MEDIA_ROOT folder are not accessible or viewable."<<std::endl;
+	std::cout<<"\tUsage: \"./media_server MEDIA_ROOT PORT_NUMBER\""<<std::endl<<std::endl;
+	std::cout<<"\tThis requires vlc and xdotools to work."<<std::endl<<std::endl;
+	std::cout<<"\tIf executing on a remote machine, remember to export the display."<<std::endl;
+	std::cout<<"\t\texport DISPLAY=:0"<<std::endl<<std::endl;
+	std::cout<<"If restarting the server, xdotools and vlc like to cause problems by not exiting."<<std::endl;
+	std::cout<<"\tDo the following berfore starting the server again to stop these problems:"<<std::endl;
+	std::cout<<"\t\t\tpkill -9 vlc"<<std::endl;
+	std::cout<<"\t\t\tpkill -9 vlc-wrapper"<<std::endl;
+	std::cout<<"\t\t\tpkill -9 xdotools"<<std::endl<<std::endl;
+	std::cout<<"\tFiles outside of the MEDIA_ROOT folder are not accessible or viewable."<<std::endl<<std::endl;
 	std::cout<<"\tOnly .avi, .m4v, .mkv, and .mp4 files can be played."<<std::endl;
-	std::cout<<"\t\tThis can be changed by editing line 367 in the source (main.cpp)."<<std::endl;
+	std::cout<<"\t\tThis can be changed by editing line 367 in the source (main.cpp)."<<std::endl<<std::endl;
 	std::cout<<"\tDefault port is 2310."<<std::endl;
 	exit(0);
 }
