@@ -1,0 +1,143 @@
+<html>
+	<head>
+		<title>Mike's Media Server</title>
+		<script type="text/javascript">
+			var intervals=new Array();
+			var names=new Array();
+
+			function init()
+			{
+				get_list();
+				document.getElementById("toolbar").style.zIndex=document.getElementById("listing").style.zIndex+1;
+				document.getElementById("listing").style.top=document.getElementById("toolbar").clientHeight;
+				setInterval(update_toolbar,1);
+			}
+
+			function update_toolbar()
+			{
+				var rect=document.getElementById("listing").getBoundingClientRect();
+				document.getElementById("toolbar").style.left=rect.left;
+				
+			}
+
+			function display(obj,parent)
+			{
+				var ret="<ul>\n";
+
+				if(parent)
+				{
+					var str=obj.name.substr(parent.length,obj.name.length-parent.length);
+
+					if(str.charAt(0)=='/')
+						str=str.substr(1,str.length-1);
+
+					ret+="<li>"+str+"</li>\n";
+				}
+
+				if(obj.files.size>0)
+				{
+					ret+="<ul>\n";
+
+					for(var ii=0;ii<obj.files.size;++ii)
+					{
+						var str=obj.files[ii].substr(obj.name.length,obj.files[ii].length-obj.name.length);
+
+						if(str.charAt(0)=='/')
+							str=str.substr(1,str.length-1);
+
+						names.push(obj.files[ii]);
+
+						ret+="<li><a href=\"\" onclick=\""+"open_file(names["+(names.length-1)+"]);"+"return false;\">"+
+							str+"</a></li>\n";
+					}
+
+					ret+="</ul>\n";
+				}
+
+				for(var ii=0;ii<obj.directories.size;++ii)
+					ret+=display(obj.directories[ii],obj.name);
+
+				ret+="</ul>\n";
+
+				return ret;
+			}
+
+			function get_list()
+			{
+				document.getElementById("listing").innerHTML="<center><br/>loading...</center>";
+
+				var xmlhttp=new XMLHttpRequest();
+
+				xmlhttp.onreadystatechange=function()
+				{
+					if(xmlhttp.readyState==4&&xmlhttp.status==200)
+					{
+						try
+						{
+							var return_json=JSON.parse(xmlhttp.responseText);
+
+							if(return_json)
+							{
+								names.length=0;
+								document.getElementById("listing").innerHTML=display(return_json);
+							}
+						}
+						catch(e)
+						{}
+					}
+				}
+
+				xmlhttp.open("GET",encodeURIComponent("list"),true);
+				xmlhttp.send(null);
+			}
+
+			function open_file(title)
+			{
+				var json={};
+				json.size="1";
+				json[0]=title;
+				send_request("open="+JSON.stringify(json));
+			}
+
+			function send_request(request)
+			{
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET",encodeURIComponent(request),true);
+				xmlhttp.send(null);
+			}
+
+			function start_periodic(request)
+			{
+				intervals.push(setInterval(function(){send_request(request)},100));
+			}
+
+			function stop_periodic()
+			{
+				for(var ii=0;ii<intervals.length;++ii)
+					window.clearInterval(intervals[ii]);
+
+				intervals.length=0;
+			}
+
+		</script>
+	</head>
+	<body onload="init();" style="margin:0px">
+		<center>
+			<div id="toolbar" style="width:700px;top:0px;position:fixed;background-color:white;">
+				<center><h1>Mike's Media Server</h1></center>
+				<center>
+					<input type="button" value="Refresh" onclick="get_list();"/>
+					<input type="button" value="Play/Pause" onclick="send_request('play_pause');"/>
+					<input type="button" value="Quit" onclick="send_request('quit');"/>
+					<input type="button" value="Aspect Ratio" onclick="send_request('aspect_ratio');"/>
+					<input type="button" value="<<" onclick="send_request('skip_backward');"/>
+					<input type="button" value="<" onmousedown="start_periodic('fast_backward');"  onmouseup="stop_periodic();"/>
+					<input type="button" value=">" onmousedown="start_periodic('fast_forward');"  onmouseup="stop_periodic();"/>
+					<input type="button" value=">>" onclick="send_request('skip_forward');"/>
+					<br/>
+				</center>
+			</div>
+		</center>
+		<div id="listing" style="width:700px;position:relative;"></div>
+	</body>
+</html>
