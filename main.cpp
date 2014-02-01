@@ -3,7 +3,9 @@
 //	Modified On:	01/31/2014
 
 //Unix Only
-//Install xdotools for this to work, xdotools is a command line keyboard emulator.
+//Install vlc and xdotools for this to work.
+//	VLC is the only media player you need.
+//	"xdotools" is a command line keyboard emulator.
 
 //Algorithm Header
 #include <algorithm>
