@@ -134,6 +134,9 @@
 					<input type="button" value="<" onmousedown="start_periodic('fast_backward');"  onmouseup="stop_periodic();"/>
 					<input type="button" value=">" onmousedown="start_periodic('fast_forward');"  onmouseup="stop_periodic();"/>
 					<input type="button" value=">>" onclick="send_request('skip_forward');"/>
+
+					<input type="button" value="^" onclick="send_request('volume_up');"/>
+					<input type="button" value="v" onclick="send_request('volume_down');"/>
 					<br/>
 				</center>
 			</div>

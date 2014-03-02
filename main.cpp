@@ -285,7 +285,29 @@ bool service_client(msl::socket& client,const std::string& message)
 		//Return True (We serviced the client)
 		return true;
 	}
+	
+	else if (request=="/volume_up")
+	{
+		    //Kill Client
+    client.close();
 
+    //Execute Command
+    int ignore=system("xdotool key ctrl+Up");
+
+    //Return True (We serviced the client)
+    return true;
+	}
+	else if(request=="/volume_down")
+	{
+		//Kill Client
+    client.close();
+  
+    //Execute Command
+    int ignore=system("xdotool key ctrl+Down");
+
+    //Return True (We serviced the client)
+    return true;
+	}
 	//Default Return False (We did not service the client)
 	return false;
 }
