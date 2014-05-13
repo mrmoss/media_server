@@ -1,6 +1,6 @@
 //Serial Source
 //	Created By:		Mike Moss
-//	Modified On:	05/20/2013
+//	Modified On:	04/21/2014
 
 //Definitions for "serial.hpp"
 #include "serial.hpp"
@@ -132,9 +132,15 @@ int msl::serial::read(void* buffer,const unsigned int size,const unsigned int ti
 }
 
 //Write Function (Returns -1 on Error Else Returns Number of Bytes Sent)
-int msl::serial::write(void* buffer,const unsigned int size,const unsigned int time_out)
+int msl::serial::write(const void* buffer,const unsigned int size,const unsigned int time_out)
 {
 	return serial_write(_port,buffer,size,time_out);
+}
+
+//Write String Function (Returns -1 on Error Else Returns Number of Bytes Sent)
+int msl::serial::write(const std::string& str)
+{
+	return write(str.c_str(),str.size(),0);
 }
 
 //System Port Accessor
@@ -369,7 +375,7 @@ int msl::serial_read(const SERIAL port,void* buffer,const unsigned int size,cons
 }
 
 //Serial Write Function (Returns Number of Bytes Sent, -1 on Error)
-int msl::serial_write(const SERIAL port,void* buffer,const unsigned int size,const unsigned long time_out)
+int msl::serial_write(const SERIAL port,const void* buffer,const unsigned int size,const unsigned long time_out)
 {
 	//Check for Bad Port
 	if(port==SERIAL_ERROR)
@@ -389,7 +395,7 @@ int msl::serial_write(const SERIAL port,void* buffer,const unsigned int size,con
 	do
 	{
 		//Get Bytes in Send Buffer
-		unsigned int bytes_sent=write(port,reinterpret_cast<char*>(buffer)+(size-bytes_unsent),bytes_unsent);
+		unsigned int bytes_sent=write(port,reinterpret_cast<const char*>(buffer)+(size-bytes_unsent),bytes_unsent);
 
 		//If Bytes Were Sent
 		if(bytes_sent>0)

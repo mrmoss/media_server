@@ -1,6 +1,6 @@
 //Serial Header
 //	Created By:		Mike Moss
-//	Modified On:	05/20/2013
+//	Modified On:	04/21/2014
 
 //Begin Define Guards
 #ifndef MSL_SERIAL_H
@@ -65,10 +65,8 @@ namespace msl
 			int read(void* buffer,const unsigned int size,const unsigned int time_out=0);
 
 			//Write Function (Returns Number of Bytes Sent, -1 on Error)
-			int write(void* buffer,const unsigned int size,const unsigned int time_out=0);
-
-			//Connection Timeout Mutator
-			void set_timeout(const unsigned long time_out);
+			int write(const void* buffer,const unsigned int size,const unsigned int time_out=0);
+			int write(const std::string& str);
 
 			//Connection Timeout Accessor
 			unsigned long timeout() const;
@@ -100,7 +98,7 @@ namespace msl
 	int serial_read(const SERIAL port,void* buffer,const unsigned int size,const unsigned long time_out=0);
 
 	//Serial Write Function (Returns Number of Bytes Sent, -1 on Error)
-	int serial_write(const SERIAL port,void* buffer,const unsigned int size,const unsigned long time_out=0);
+	int serial_write(const SERIAL port,const void* buffer,const unsigned int size,const unsigned long time_out=0);
 }
 
 //End Define Guards

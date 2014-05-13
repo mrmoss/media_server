@@ -1,6 +1,6 @@
 //Socket Header
 //	Created By:		Mike Moss
-//	Modified On:	10/16/2013
+//	Modified On:	04/21/2014
 
 //Required Libraries:
 //	Ws2_32 (windows only)
@@ -70,8 +70,8 @@ namespace msl
 			unsigned short _port;
 	};
 
-	//Socket Class Declaration (NOT SURE IF BEING A STD::OSTREAM CHILD IS THE WAY TO GO HERE)
-	class socket:public std::ostream
+	//Socket Class Declaration
+	class socket
 	{
 		public:
 			//Constructor (Default)
@@ -88,6 +88,12 @@ namespace msl
 
 			//Not Operator (For Boolean Operator)
 			bool operator!() const;
+
+			//Equality Operation
+			bool operator==(const msl::socket& rhs) const;
+
+			//Not Equality Operation
+			bool operator!=(const msl::socket& rhs) const;
 
 			//Good Function (Tests if Socket is Good)
 			bool good() const;
@@ -113,7 +119,8 @@ namespace msl
 			int read(void* buffer,const unsigned int size,const unsigned long time_out=0,const int flags=0) const;
 
 			//Write Function (Returns Number of Bytes Sent, -1 on Error)
-			int write(const void* buffer,const unsigned int size,const unsigned long time_out=0,const int flags=0) const;
+			int write(const void* buffer,const unsigned int size,const unsigned long time_out=0,const int flags=0);
+			int write(const std::string& str);
 
 			//IP Address Accessor (Read Only)
 			msl::ipv4 ip() const;
@@ -121,31 +128,12 @@ namespace msl
 			//System Socket Accessor
 			SOCKET system_socket() const;
 
-			//Stream Out Operator
-			template <typename T> friend msl::socket& operator<<(msl::socket& lhs,const T& rhs);
-
 		private:
 			//Member Variables
 			msl::ipv4 _address;
 			SOCKET _socket;
 			bool _hosting;
 	};
-
-	//Socket Class Stream Operator (Templated Function)
-	template <typename T> msl::socket& operator<<(msl::socket& lhs,const T& rhs)
-	{
-		//Create a String Stream
-		std::ostringstream ostr;
-
-		//Put in Data
-		ostr<<rhs;
-
-		//Write Data
-		lhs.write(reinterpret_cast<void*>(const_cast<char*>(ostr.str().c_str())),ostr.str().size(),200);
-
-		//Return Stream
-		return lhs;
-	}
 }
 
 //Socket Initialize Function (Sets up the use of sockets, operating system dependent...)
@@ -286,7 +274,7 @@ int main(int argc,char* argv[])
 		}
 
 		//Give OS a Break
-		usleep(0);
+		msl::nsleep(1000000);
 	}
 
 	//Call Me Plz T_T
@@ -346,11 +334,17 @@ void service_client(msl::socket& client,const std::string& message)
 
 		//Load File
 		if(msl::file_to_string(web_root+request,file,true))
-			client<<msl::http_pack_string(file,mime_type,false);
+		{
+			std::string response=msl::http_pack_string(file,mime_type,false);
+			client.write(response.c_str(),response.size());
+		}
 
 		//Bad File
 		else if(msl::file_to_string(web_root+"/not_found.html",file,true))
-			client<<msl::http_pack_string(file);
+		{
+			std::string response=msl::http_pack_string(file);
+			client.write(response.c_str(),response.size());
+		}
 
 		//Close Connection
 		client.close();

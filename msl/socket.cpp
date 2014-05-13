@@ -1,6 +1,6 @@
 //Socket Source
 //	Created By:		Mike Moss
-//	Modified On:	10/16/2013
+//	Modified On:	04/21/2014
 
 //Required Libraries:
 //	Ws2_32 (windows only)
@@ -91,7 +91,7 @@ std::string msl::ipv4::str() const
 }
 
 //Constructor(Default)
-msl::socket::socket(const std::string& address):std::ostream(reinterpret_cast<std::streambuf*>(NULL)),_socket(SOCKET_ERROR),_hosting(false)
+msl::socket::socket(const std::string& address):_socket(SOCKET_ERROR),_hosting(false)
 {
 	//Parsing Variables
 	unsigned char ip[4]={0,0,0,0};
@@ -130,8 +130,7 @@ msl::socket::socket(const std::string& address):std::ostream(reinterpret_cast<st
 }
 
 //Copy Constructor
-msl::socket::socket(const msl::socket& copy):std::ostream(reinterpret_cast<std::streambuf*>(NULL)),
-	_address(copy._address),_socket(copy._socket),_hosting(copy._hosting)
+msl::socket::socket(const msl::socket& copy):_address(copy._address),_socket(copy._socket),_hosting(copy._hosting)
 {}
 
 //Copy Assignment Operator
@@ -157,6 +156,18 @@ msl::socket::operator bool() const
 bool msl::socket::operator!() const
 {
 	return !static_cast<bool>(*this);
+}
+
+//Equality Operation
+bool msl::socket::operator==(const msl::socket& rhs) const
+{
+	return _socket==rhs._socket;
+}
+
+//Not Equality Operation
+bool msl::socket::operator!=(const msl::socket& rhs) const
+{
+	return !(*this==rhs);
 }
 
 //Good Function (Tests if Socket is Good)
@@ -234,9 +245,15 @@ int msl::socket::read(void* buffer,const unsigned int size,const unsigned long t
 }
 
 //Write Function (Returns -1 on Error Else Returns Number of Bytes Sent)
-int msl::socket::write(const void* buffer,const unsigned int size,const unsigned long time_out,const int flags) const
+int msl::socket::write(const void* buffer,const unsigned int size,const unsigned long time_out,const int flags)
 {
 	return socket_write(_socket,buffer,size,time_out,flags);
+}
+
+//Write String Function (Returns -1 on Error Else Returns Number of Bytes Sent)
+int msl::socket::write(const std::string& str)
+{
+	return write(str.c_str(),str.size(),0);
 }
 
 //IP Address Accessor (Read Only)
